@@ -1,0 +1,53 @@
+apply plugin: "java"
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+		classpath group: "info.solidsoft.gradle.pitest", name: "gradle-pitest-plugin", version: "1.1.11"
+	}
+}
+    
+apply plugin: "info.solidsoft.pitest"
+
+group = "at.woodstick"
+version = "1.0.0"
+
+sourceCompatibility = "1.8"
+
+repositories {
+    mavenCentral()
+    jcenter()
+}
+
+dependencies {
+	testCompile group: "junit", name: "junit", version: "4.12"
+}
+
+pitest {
+	// Not needed when project.group property is set
+	targetClasses = ["at.woodstick.*"]
+	
+	mutators = [
+		"INCREMENTS",
+		"VOID_METHOD_CALLS",
+		"RETURN_VALS",
+		"MATH",
+		"NEGATE_CONDITIONALS",
+		"INVERT_NEGS",
+		"CONDITIONALS_BOUNDARY",
+		"REMOVE_CONDITIONALS"
+	]
+	
+	exportLineCoverage = true
+	
+	outputFormats = ["XML", "HTML"]
+	
+	threads = 4
+}
+
+
+task pitestBuild(dependsOn: ["pitest", "build"])  {
+	description "Runs pitest and build task"
+}
